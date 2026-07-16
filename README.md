@@ -10,7 +10,9 @@
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=flat-square&logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=WMPGGC32C7U7U)
 
-Simple WoW Addon which show spell and item ID's on tooltip.
+SpellAndItemID is a lightweight World of Warcraft addon that adds useful technical information directly to in-game tooltips. It displays IDs for spells, items, NPCs, quests, achievements, and glyphs, making it easier for addon developers, server administrators, and players to quickly identify game objects without using external databases.
+
+The addon can also show which unit applied a buff or debuff and supports both English and Russian game clients.
   
   </div>
 
