@@ -1,9 +1,13 @@
+local _, addon = ...;
+
 local strfind, strmatch, strsub = string.find, string.match, string.sub;
 local next, tonumber, tostring, type, select = next, tonumber, tostring, type, select;
-local GetLocale, UnitName, UnitGUID, GetGlyphSocketInfo = GetLocale, UnitName, UnitGUID, GetGlyphSocketInfo;
-local GetItemIcon, GetSpellInfo, GetAchievementInfo = GetItemIcon, GetSpellInfo, GetAchievementInfo;
-local UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer = UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer;
+local UnitName, UnitClass, UnitGUID = UnitName, UnitClass, UnitGUID;
+local GetGlyphSocketInfo = GetGlyphSocketInfo;
+local GetItemIcon, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo = GetItemIcon, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo;
+local UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer, UnitIsUnit = UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer, UnitIsUnit;
 local CreateFrame, hooksecurefunc, IsAddOnLoaded = CreateFrame, hooksecurefunc, IsAddOnLoaded;
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
 local _G = _G;
 
 local GameTooltip = GameTooltip;
@@ -13,33 +17,16 @@ local ItemRefShoppingTooltip2 = ItemRefShoppingTooltip2;
 local ShoppingTooltip1 = ShoppingTooltip1;
 local ShoppingTooltip2 = ShoppingTooltip2;
 
-local types = {
-	spell       = "Spell ID:",
-	aplied		= "Applied by:",
-	item        = "Item ID:",
-	unit        = "NPC ID:",
-	quest       = "Quest ID:",
-	achievement = "Achievement ID:",
-	glyph 		= "Glyph ID:",
-	icon        = "|cff80FFAAIcon:|r",
-};
-
-if (GetLocale() == "ruRU") then
-	types.spell       = "ID заклинания:"
-	types.aplied      = "Наложено:"
-	types.item        = "ID предмета:"
-	types.unit        = "ID НИП:"
-	types.quest       = "ID задания:"
-	types.achievement = "ID достижения:"
-	types.glyph		  = "ID символа:"
-	types.icon        = "|cff80FFAAИконка:|r"
-end;
+local types = addon.types;
+local glyphSpellIds = addon.glyphSpellIds;
+local YOU_SUFFIX = " " .. types.you;
 
 -- Lightweight caches ----------------------------------------------------------
 local glyphIdCache = {};
 local linkToItemIdCache = {};
 local unitIdCache = {};
 local spellIdCache = {};
+local spellLineValueCache = {};
 local spellIconPathCache = {};
 local itemIconPathCache = {};
 local achievementIconPathCache = {};
@@ -69,6 +56,16 @@ end
 -- Precompiled patterns --------------------------------------------------------
 local ITEM_ID_PATTERN = "item:(%d+)";
 local SPELL_ID_PATTERN = "^spell:(%d+)";
+local GLYPH_ID_PATTERN = "^glyph:%d+:(%d+)";
+local GLYPH_HYPERLINK_ID_PATTERN = "|Hglyph:%d+:(%d+)|h";
+
+local function getGlyphSpellIdFromLink(link)
+	if not link then return; end
+
+	local glyphId = strmatch(link, GLYPH_ID_PATTERN) or strmatch(link, GLYPH_HYPERLINK_ID_PATTERN);
+	if not glyphId then return; end
+	return glyphSpellIds[tonumber(glyphId)];
+end
 
 -- Tooltip state avoids scanning named FontStrings and allocating lookup strings
 -- every time overlapping tooltip hooks fire.
@@ -116,7 +113,7 @@ local function getTooltipLine(state, index)
 	return left, right;
 end
 
-local function addLine(tooltip, id, label)
+local function addLine(tooltip, id, label, r, g, b)
 	if id == nil or id == false then return false; end
 
 	local state = tooltipStates[tooltip];
@@ -125,7 +122,7 @@ local function addLine(tooltip, id, label)
 		return false;
 	end
 
-	tooltip:AddDoubleLine(label, id, nil, nil, nil, 1, 1, 1);
+	tooltip:AddDoubleLine(label, id, nil, nil, nil, r or 1, g or 1, b or 1);
 	state[label] = generation;
 	state.hasLines = generation;
 	return true;
@@ -158,6 +155,8 @@ local ICON_PREFIX = "Interface\\Icons\\";
 local ICON_PREFIX_ALT = "Interface/Icons/";
 local ICON_PREFIX_LENGTH = #ICON_PREFIX;
 local ICON_PREFIX_ALT_LENGTH = #ICON_PREFIX_ALT;
+local SPELL_RANK_PREFIX = " |cffaaaaaa(";
+local SPELL_RANK_SUFFIX = ")|r";
 
 local function normalizeIconPath(icon)
 	if not icon then return nil; end
@@ -175,20 +174,42 @@ local function normalizeIconPath(icon)
 	return icon;
 end
 
-local function getCachedSpellIcon(id, knownIcon)
+local function getCachedSpellData(id, knownRank, knownIcon, includeRank)
+	local lineValue = spellLineValueCache[id];
 	local icon = spellIconPathCache[id];
-	if icon ~= nil then
-		if icon ~= false or not knownIcon then
-			return icon ~= false and icon or nil;
-		end
+	local resolvedRank, resolvedIcon;
+
+	if (includeRank and lineValue == nil and knownRank == nil) or
+		(icon == nil and knownIcon == nil) then
+		resolvedRank, resolvedIcon = select(2, GetSpellInfo(id));
 	end
 
-	if not knownIcon then
-		knownIcon = select(3, GetSpellInfo(id));
+	if includeRank and (lineValue == nil or (lineValue == false and knownRank ~= nil)) then
+		local rank = knownRank or resolvedRank;
+		if type(rank) ~= "string" or rank == "" or not strfind(rank, "%d") then
+			rank = nil;
+		end
+
+		lineValue = rank and (tostring(id) .. SPELL_RANK_PREFIX .. rank .. SPELL_RANK_SUFFIX) or false;
+		setCachedValue(spellLineValueCache, id, lineValue);
 	end
-	icon = normalizeIconPath(knownIcon) or false;
-	setCachedValue(spellIconPathCache, id, icon);
-	return icon ~= false and icon or nil;
+
+	local rawIcon = knownIcon or resolvedIcon;
+	if icon == nil or (icon == false and rawIcon ~= nil) then
+		icon = normalizeIconPath(rawIcon) or false;
+		setCachedValue(spellIconPathCache, id, icon);
+	end
+
+	local displayId = id;
+	if includeRank and lineValue ~= false then
+		displayId = lineValue;
+	end
+	return displayId, icon ~= false and icon or nil;
+end
+
+local function getCachedSpellIcon(id, knownIcon)
+	local _, icon = getCachedSpellData(id, nil, knownIcon, false);
+	return icon;
 end
 
 local function getCachedItemIcon(id)
@@ -220,21 +241,33 @@ local function addIdBlock(tooltip, id, label, icon)
 	return changed;
 end
 
+local function addSpellIdBlock(tooltip, id, rank, icon)
+	local displayId, spellIcon = getCachedSpellData(id, rank, icon, true);
+	return addIdBlock(tooltip, displayId, types.spell, spellIcon);
+end
+
 -- For Linked Tooltips --------------------------------------------------------
 local function onSetHyperlink(self, link)
     if not link then return; end
 
     local linkType, id = strmatch(link, "^(%a+):(%d+)");
     if not id then return; end
-    id = tonumber(id);
+    if linkType == "glyph" then
+        id = getGlyphSpellIdFromLink(link);
+    else
+        id = tonumber(id);
+    end
+    if not id then return; end
 
     local changed;
     if linkType == "spell" or linkType == "enchant" or linkType == "trade" then
-        changed = addIdBlock(self, id, types.spell, getCachedSpellIcon(id));
+        changed = addSpellIdBlock(self, id);
     elseif linkType == "quest" then
         changed = addIdBlock(self, id, types.quest);
     elseif linkType == "achievement" then
         changed = addIdBlock(self, id, types.achievement, getCachedAchievementIcon(id));
+    elseif linkType == "glyph" then
+        changed = addIdBlock(self, id, types.glyph);
     end
 
     if changed then
@@ -245,16 +278,36 @@ hooksecurefunc(ItemRefTooltip, "SetHyperlink", onSetHyperlink);
 hooksecurefunc(GameTooltip, "SetHyperlink", onSetHyperlink);
 
 -- Spell Hooks ----------------------------------------------------------------
+local playerAppliedByText;
+
 local function attachAura(self, getter, ...)
-    local _, _, icon, _, _, _, _, unitCaster, _, _, spellId = getter(...);
+    local _, rank, icon, _, _, _, _, unitCaster, _, _, spellId = getter(...);
     local changed = false;
 
     if spellId then
-        changed = addIdBlock(self, spellId, types.spell, getCachedSpellIcon(spellId, icon));
+        changed = addSpellIdBlock(self, spellId, rank, icon);
     end
     if unitCaster then
         local exactname = UnitName(unitCaster);
-        changed = addLine(self, exactname, types.aplied) or changed;
+        if exactname then
+            local r, g, b = 1, 1, 1;
+            if UnitIsPlayer(unitCaster) then
+                local _, class = UnitClass(unitCaster);
+                local color = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class];
+                if color then
+                    r, g, b = color.r, color.g, color.b;
+                end
+            end
+
+            if UnitIsUnit(unitCaster, "player") then
+                if not playerAppliedByText then
+                    playerAppliedByText = exactname .. YOU_SUFFIX;
+                end
+                exactname = playerAppliedByText;
+            end
+
+            changed = addLine(self, exactname, types.aplied, r, g, b) or changed;
+        end
     end
 
     if changed then
@@ -274,15 +327,15 @@ local function onSetItemRef(link)
 		id = tonumber(strmatch(link, SPELL_ID_PATTERN)) or false;
 		setCachedValue(spellIdCache, link, id);
 	end
-	if id and addIdBlock(tooltip, id, types.spell, getCachedSpellIcon(id)) then
+	if id and addSpellIdBlock(tooltip, id) then
 		tooltip:Show();
 	end
 end
 hooksecurefunc("SetItemRef", onSetItemRef);
 
 local function attachSpellTooltip(self)
-	local _, _, id = self:GetSpell();
-	if id and addIdBlock(self, id, types.spell, getCachedSpellIcon(id)) then
+	local _, rank, id = self:GetSpell();
+	if id and addSpellIdBlock(self, id, rank) then
 		self:Show();
 	end
 end
@@ -375,7 +428,46 @@ local function onAchievementLeave()
 	GameTooltip:Hide();
 end
 
+local criteriaFrameIndices = {};
+local achievementCriteriaHooked = false;
+
+local function onAchievementCriteriaEnter(frame)
+	local index = criteriaFrameIndices[frame];
+	if not index then return; end
+
+	local objectives = frame:GetParent();
+	local button = objectives and objectives:GetParent();
+	local achievementId = button and button.id;
+	if not achievementId then return; end
+
+	local criteriaId = select(10, GetAchievementCriteriaInfo(achievementId, index));
+	if not criteriaId then return; end
+
+	GameTooltip:SetOwner(frame, "ANCHOR_NONE");
+	GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0);
+	addLine(GameTooltip, achievementId, types.achievement);
+	addLine(GameTooltip, criteriaId, types.criteria);
+	GameTooltip:Show();
+end
+
+local function onAchievementCriteriaCreated(index, renderOffScreen)
+	local prefix = renderOffScreen and "AchievementFrameCriteriaOffScreen" or "AchievementFrameCriteria";
+	local frame = _G[prefix .. index];
+	if not frame then return; end
+
+	if criteriaFrameIndices[frame] == nil then
+		frame:HookScript("OnEnter", onAchievementCriteriaEnter);
+		frame:HookScript("OnLeave", onAchievementLeave);
+	end
+	criteriaFrameIndices[frame] = index;
+end
+
 local function hookAchievementButtons()
+	if not achievementCriteriaHooked then
+		hooksecurefunc("AchievementButton_GetCriteria", onAchievementCriteriaCreated);
+		achievementCriteriaHooked = true;
+	end
+
 	local container = AchievementFrameAchievementsContainer;
 	local buttons = container and container.buttons;
 	if not buttons then return; end

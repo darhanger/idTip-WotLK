@@ -1,9 +1,0 @@
-## Interface: 30300
-## Title: |cff00ccffSpellID and ItemID|r
-## Notes: SpellID and ItemID in Tooltip
-## Author: |cffa330c9DarhangeR|r
-## Version: |cffff00001.3.4|r
-## X-Date: 2026-07-19
-## X-Category: Information
-
-Core.lua

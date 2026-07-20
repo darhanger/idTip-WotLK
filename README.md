@@ -2,11 +2,7 @@
 
 <div align="center">
 
-[English](README.md) | [Русский](README_RU.md)
-
-</div>
-
-<div align="center">
+**English** | [Русский](README_RU.md)
 
 # idTip WotLK (SpellAndItemID)
 

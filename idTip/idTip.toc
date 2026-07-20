@@ -1,0 +1,27 @@
+## Interface: 30300
+## Title: |cff00ccffidTip (WotLK)|r
+## Title-ruRU: |cff00ccffidTip (WotLK)|r
+## Title-deDE: |cff00ccffidTip (WotLK)|r
+## Title-frFR: |cff00ccffidTip (WotLK)|r
+## Title-esES: |cff00ccffidTip (WotLK)|r
+## Title-esMX: |cff00ccffidTip (WotLK)|r
+## Title-koKR: |cff00ccffidTip (WotLK)|r
+## Title-zhTW: |cff00ccffidTip (WotLK)|r
+## Title-zhCN: |cff00ccffidTip (WotLK)|r
+## Notes: Adds IDs to the various tooltips ingame
+## Notes-ruRU: Добавляет ID в различные игровые тултипы
+## Notes-deDE: Fügt IDs zu verschiedenen Tooltips im Spiel hinzu
+## Notes-frFR: Ajoute des ID aux différentes infobulles du jeu
+## Notes-esES: Añade ID a las distintas descripciones emergentes del juego
+## Notes-esMX: Añade ID a las distintas descripciones emergentes del juego
+## Notes-koKR: 게임 내 다양한 툴팁에 ID를 추가합니다
+## Notes-zhTW: 在遊戲內的各種提示資訊中加入 ID
+## Notes-zhCN: 为游戏内的各种鼠标提示添加 ID
+## Author: |cffa330c9DarhangeR|r
+## Version: |cffff00001.4|r
+## X-Date: 2026-07-20
+## X-Category: Information
+
+Localization.lua
+GlyphData.lua
+Core.lua
