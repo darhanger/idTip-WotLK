@@ -17,11 +17,14 @@
 ## Notes-koKR: 게임 내 다양한 툴팁에 ID를 추가합니다
 ## Notes-zhTW: 在遊戲內的各種提示資訊中加入 ID
 ## Notes-zhCN: 为游戏内的各种鼠标提示添加 ID
-## Author: |cffa330c9DarhangeR|r
-## Version: |cffff00001.4|r
+## Author: DarhangeR
+## Version: 1.5
 ## X-Date: 2026-07-20
 ## X-Category: Information
+## X-Website: https://github.com/darhanger/idTip-WotLK
+## SavedVariables: idTipDB
 
 Localization.lua
 GlyphData.lua
+Options.lua
 Core.lua
