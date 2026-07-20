@@ -10,7 +10,7 @@
 ![WoW 3.3.5a](https://img.shields.io/badge/WoW-3.3.5a-C79C6E?style=flat-square)
 [![License](https://img.shields.io/github/license/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/blob/master/LICENSE)
 [![Last Release](https://img.shields.io/github/v/release/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases/latest)
-[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.4/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
+[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.5/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![All Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square\&logo=discord\&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 
