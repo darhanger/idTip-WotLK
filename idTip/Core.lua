@@ -20,6 +20,7 @@ local ShoppingTooltip2 = ShoppingTooltip2;
 local types = addon.types;
 local settings = addon.settings;
 local glyphSpellIds = addon.glyphSpellIds;
+local itemSetIds = addon.itemSetIds or {};
 local YOU_SUFFIX = " " .. types.you;
 
 -- Lightweight caches ----------------------------------------------------------
@@ -393,7 +394,7 @@ end);
 
 -- Items Hooks ----------------------------------------------------------------
 local function attachItemTooltip(self)
-	if not settings.item and not settings.icon then return; end
+	if not settings.item and not settings.itemset and not settings.icon then return; end
 
 	local _, link = self:GetItem();
 	if not link then return; end
@@ -404,7 +405,16 @@ local function attachItemTooltip(self)
 		setCachedValue(linkToItemIdCache, link, id);
 	end
 	local icon = id and settings.icon and getCachedItemIcon(id);
-	if id and addIdBlock(self, id, types.item, "item", icon) then
+	if not id then return; end
+
+	local changed = addIdBlock(self, id, types.item, "item", icon);
+	local setId = settings.itemset and itemSetIds[id];
+	if setId then
+		changed = addSpacerLine(self) or changed;
+		changed = addLine(self, setId, types.itemset) or changed;
+	end
+
+	if changed then
 		self:Show();
 	end
 end;

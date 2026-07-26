@@ -10,7 +10,7 @@
 ![WoW 3.3.5a](https://img.shields.io/badge/WoW-3.3.5a-C79C6E?style=flat-square)
 [![License](https://img.shields.io/github/license/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/blob/master/LICENSE)
 [![Last Release](https://img.shields.io/github/v/release/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases/latest)
-[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.5/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
+[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.6/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![All Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square\&logo=discord\&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 
@@ -26,31 +26,35 @@ The addon automatically extends supported game tooltips with additional informat
 
 It can display:
 
-* **Spell ID** — identifier of a spell, aura, buff or debuff.
+* **Spell ID** — identifier and, when available, rank of a spell, aura, buff or debuff.
 * **Applied by** — name of the unit that applied an aura.
 * **You** — highlights auras applied by the current player.
 * **Item ID** — identifier of an item.
+* **Item Set ID** — identifier of the set to which an item belongs.
 * **NPC ID** — identifier of a creature or NPC.
 * **Quest ID** — identifier of a quest.
 * **Achievement ID** — identifier of an achievement.
-* **Criteria ID** — identifier of an achievement criterion.
+* **Achievement Criteria ID** — identifier of an achievement criterion.
 * **Glyph ID** — identifier of a glyph.
 * **Icon** — technical information about the associated icon.
+
+Item Set IDs are resolved from bundled WotLK mapping data and do not require a custom client API or an external DBC reader at runtime.
 
 ## Tooltip examples
 
 Depending on the selected object, spell or interface element, the addon may add lines such as:
 
 ```text
-Spell ID: 12345
+Spell ID: 12345 (Rank 1)
 Applied by: PlayerName (You)
-Item ID: 6948
+Item ID: 51280
+Item Set ID: 883
 NPC ID: 36597
 Quest ID: 24545
 Achievement ID: 4530
-Criteria ID: 12345
+Achievement Criteria ID: 12345
 Glyph ID: 45790
-Icon: Interface\Icons\INV_Misc_QuestionMark
+Icon: INV_Gauntlets_90Black
 ```
 
 The displayed information is color-coded so that different identifier types can be recognized quickly.
@@ -73,6 +77,8 @@ idTip WotLK works with many standard World of Warcraft tooltips, including:
 
 Availability of particular information depends on the tooltip and the data provided by the game client.
 
+Bundled item-set mappings cover the included WotLK data. Custom items or modified set assignments require updating [`Data/ItemSetData.lua`](idTip/Data/ItemSetData.lua).
+
 ## Installation
 
 1. Download the latest version from the [Releases](https://github.com/darhanger/idTip-WotLK/releases) page.
@@ -90,11 +96,16 @@ World of Warcraft
 └── Interface
     └── AddOns
         └── idTip
-            ├── idTip.toc
-            └── ...
+            ├── Data
+            │   ├── GlyphData.lua
+            │   └── ItemSetData.lua
+            ├── Core.lua
+            ├── Localization.lua
+            ├── Options.lua
+            └── idTip.toc
 ```
 
-5. Restart the game client
+5. Restart the game client.
 
 ## Compatibility
 
@@ -107,9 +118,15 @@ Compatibility with heavily modified custom clients or tooltip replacements may v
 
 ## Usage
 
-The addon works automatically and does not require configuration.
+The addon starts working immediately with all supported information enabled.
 
 Simply move the cursor over a supported spell, item, NPC, quest, achievement or another interface element. The corresponding technical information will be added to its tooltip.
+
+## Configuration
+
+Open the Blizzard Interface Options and select **idTip WotLK** → **Settings**. Spell IDs, aura casters, item IDs, item-set IDs, NPC IDs, quest IDs, achievement and criteria IDs, glyph IDs, and icon paths can be enabled or disabled independently.
+
+Changes follow the standard **Okay**, **Cancel**, and **Defaults** behavior of the Blizzard options window.
 
 ## Why use idTip WotLK?
 
@@ -125,7 +142,7 @@ It can be useful for:
 * database editing;
 * quest and achievement debugging;
 * spell and aura configuration;
-* identifying NPCs and items;
+* identifying NPCs, items and item sets;
 * testing custom server content.
 
 ## Support

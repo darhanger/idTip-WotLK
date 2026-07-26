@@ -14,6 +14,7 @@ local defaults = {
 	spell       = true,
 	aplied      = true,
 	item        = true,
+	itemset     = true,
 	unit        = true,
 	quest       = true,
 	achievement = true,
@@ -39,6 +40,7 @@ local optionOrder = {
 	"spell",
 	"aplied",
 	"item",
+	"itemset",
 	"unit",
 	"quest",
 	"achievement",
@@ -221,8 +223,8 @@ author:SetText(L.author .. ": |cffa330c9" .. (GetAddOnMetadata(addonName, "Autho
 local version = aboutPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall");
 version:SetPoint("TOPLEFT", author, "BOTTOMLEFT", 0, -4);
 version:SetText(L.version .. ": |cffff5555" ..
-	(GetAddOnMetadata(addonName, "Version") or "1.5") .. " (" ..
-	(GetAddOnMetadata(addonName, "X-Date") or "2026-07-20") .. ")|r");
+	(GetAddOnMetadata(addonName, "Version") or "1.6") .. " (" ..
+	(GetAddOnMetadata(addonName, "X-Date") or "2026-07-27") .. ")|r");
 
 InterfaceOptions_AddCategory(aboutPanel);
 InterfaceOptions_AddCategory(optionsPanel);

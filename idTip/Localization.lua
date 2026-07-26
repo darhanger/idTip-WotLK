@@ -7,6 +7,7 @@ local types = {
 	aplied      = "|cff9d9d9dApplied by:|r",
 	you         = "|cff00ff00(You)|r",
 	item        = "|cffe6cc80Item ID:|r",
+	itemset     = "|cffa335eeItem Set ID:|r",
 	unit        = "|cffc79c6eNPC ID:|r",
 	quest       = "|cffffcc00Quest ID:|r",
 	achievement = "|cffcc99ffAchievement ID:|r",
@@ -40,6 +41,7 @@ local L = {
 		spell       = "Shows the spell ID and, when available, its rank in tooltips for spells, abilities, auras, enchants, and trade skills.",
 		aplied      = "Shows the name of the unit that applied a buff, debuff, or aura, and marks effects applied by you.",
 		item        = "Shows the item ID in tooltips for items, equipment, links, and comparisons.",
+		itemset     = "Shows the item set ID for items that belong to a set.",
 		unit        = "Shows the NPC ID for creatures and other non-player units.",
 		quest       = "Shows the quest ID in quest-link tooltips.",
 		achievement = "Shows the achievement ID in achievement links and the achievement window.",
@@ -54,6 +56,7 @@ if locale == "deDE" then
 	types.aplied      = "|cff9d9d9dGewirkt von:|r";
 	types.you         = "|cff00ff00(Du)|r";
 	types.item        = "|cffe6cc80Gegenstands-ID:|r";
+	types.itemset     = "|cffa335eeGegenstandsset-ID:|r";
 	types.unit        = "|cffc79c6eNSC-ID:|r";
 	types.quest       = "|cffffcc00Quest-ID:|r";
 	types.achievement = "|cffcc99ffErfolgs-ID:|r";
@@ -83,6 +86,7 @@ if locale == "deDE" then
 		spell       = "Zeigt die Zauber-ID und, falls verfügbar, den Rang in Tooltips für Zauber, Fähigkeiten, Auren, Verzauberungen und Berufe an.";
 		aplied      = "Zeigt den Namen der Einheit an, die einen Stärkungszauber, Schwächungszauber oder eine Aura angewendet hat, und markiert deine eigenen Effekte.";
 		item        = "Zeigt die Gegenstands-ID in Tooltips für Gegenstände, Ausrüstung, Links und Vergleiche an.";
+		itemset     = "Zeigt die Gegenstandsset-ID für Gegenstände an, die zu einem Set gehören.";
 		unit        = "Zeigt die NSC-ID für Kreaturen und andere Einheiten an, die keine Spieler sind.";
 		quest       = "Zeigt die Quest-ID in Tooltips von Questlinks an.";
 		achievement = "Zeigt die Erfolgs-ID in Erfolgslinks und im Erfolgsfenster an.";
@@ -95,6 +99,7 @@ elseif locale == "frFR" then
 	types.aplied      = "|cff9d9d9dAppliqué par :|r";
 	types.you         = "|cff00ff00(Vous)|r";
 	types.item        = "|cffe6cc80ID de l'objet :|r";
+	types.itemset     = "|cffa335eeID de l'ensemble :|r";
 	types.unit        = "|cffc79c6eID du PNJ :|r";
 	types.quest       = "|cffffcc00ID de la quête :|r";
 	types.achievement = "|cffcc99ffID du haut fait :|r";
@@ -124,6 +129,7 @@ elseif locale == "frFR" then
 		spell       = "Affiche l'ID et, si disponible, le rang du sort dans les infobulles des sorts, techniques, auras, enchantements et métiers.";
 		aplied      = "Affiche le nom de l'unité ayant appliqué une amélioration, un affaiblissement ou une aura, et signale vos propres effets.";
 		item        = "Affiche l'ID de l'objet dans les infobulles des objets, équipements, liens et comparaisons.";
+		itemset     = "Affiche l'ID de l'ensemble pour les objets qui appartiennent à un ensemble.";
 		unit        = "Affiche l'ID du PNJ pour les créatures et les autres unités non-joueurs.";
 		quest       = "Affiche l'ID de la quête dans les infobulles des liens de quête.";
 		achievement = "Affiche l'ID du haut fait dans les liens et la fenêtre des hauts faits.";
@@ -136,6 +142,7 @@ elseif locale == "esES" or locale == "esMX" then
 	types.aplied      = "|cff9d9d9dAplicado por:|r";
 	types.you         = "|cff00ff00(Tú)|r";
 	types.item        = "|cffe6cc80ID de objeto:|r";
+	types.itemset     = "|cffa335eeID de conjunto:|r";
 	types.unit        = "|cffc79c6eID de PNJ:|r";
 	types.quest       = "|cffffcc00ID de misión:|r";
 	types.achievement = "|cffcc99ffID de logro:|r";
@@ -166,6 +173,7 @@ elseif locale == "esES" or locale == "esMX" then
 		spell       = "Muestra el ID y, cuando está disponible, el rango del hechizo en las descripciones de hechizos, facultades, auras, encantamientos y profesiones.";
 		aplied      = "Muestra el nombre de la unidad que aplicó un beneficio, perjuicio o aura, y señala tus propios efectos.";
 		item        = "Muestra el ID del objeto en las descripciones de objetos, equipo, enlaces y comparaciones.";
+		itemset     = "Muestra el ID de conjunto para los objetos que pertenecen a un conjunto.";
 		unit        = "Muestra el ID de PNJ para criaturas y otras unidades que no sean jugadores.";
 		quest       = "Muestra el ID de misión en las descripciones de los enlaces de misión.";
 		achievement = "Muestra el ID de logro en los enlaces y en la ventana de logros.";
@@ -178,6 +186,7 @@ elseif locale == "ruRU" then
 	types.aplied      = "|cff9d9d9dНаложено:|r";
 	types.you         = "|cff00ff00(Вы)|r";
 	types.item        = "|cffe6cc80ID предмета:|r";
+	types.itemset     = "|cffa335eeID комплекта:|r";
 	types.unit        = "|cffc79c6eID НИП:|r";
 	types.quest       = "|cffffcc00ID задания:|r";
 	types.achievement = "|cffcc99ffID достижения:|r";
@@ -208,6 +217,7 @@ elseif locale == "ruRU" then
 		spell       = "Показывает ID и, если доступен, ранг заклинания в подсказках заклинаний, способностей, аур, зачарований и профессий.";
 		aplied      = "Показывает имя юнита, наложившего положительный эффект, отрицательный эффект или ауру, и помечает ваши эффекты.";
 		item        = "Показывает ID предмета в подсказках предметов, экипировки, ссылок и сравнения.";
+		itemset     = "Показывает ID комплекта для предметов, входящих в комплект.";
 		unit        = "Показывает ID НИП для существ и других юнитов, не являющихся игроками.";
 		quest       = "Показывает ID задания в подсказках ссылок на задания.";
 		achievement = "Показывает ID достижения в ссылках на достижения и окне достижений.";
@@ -220,6 +230,7 @@ elseif locale == "koKR" then
 	types.aplied      = "|cff9d9d9d시전자:|r";
 	types.you         = "|cff00ff00(본인)|r";
 	types.item        = "|cffe6cc80아이템 ID:|r";
+	types.itemset     = "|cffa335ee아이템 세트 ID:|r";
 	types.unit        = "|cffc79c6eNPC ID:|r";
 	types.quest       = "|cffffcc00퀘스트 ID:|r";
 	types.achievement = "|cffcc99ff업적 ID:|r";
@@ -250,6 +261,7 @@ elseif locale == "koKR" then
 		spell       = "주문, 능력, 오라, 마법부여 및 전문기술 툴팁에 주문 ID와 사용 가능한 경우 등급을 표시합니다.";
 		aplied      = "강화 효과, 약화 효과 또는 오라를 적용한 유닛의 이름을 표시하고 자신의 효과를 구분합니다.";
 		item        = "아이템, 장비, 링크 및 비교 툴팁에 아이템 ID를 표시합니다.";
+		itemset     = "세트에 속한 아이템의 아이템 세트 ID를 표시합니다.";
 		unit        = "플레이어가 아닌 생물 및 다른 유닛의 NPC ID를 표시합니다.";
 		quest       = "퀘스트 링크 툴팁에 퀘스트 ID를 표시합니다.";
 		achievement = "업적 링크와 업적 창에 업적 ID를 표시합니다.";
@@ -262,6 +274,7 @@ elseif locale == "zhTW" then
 	types.aplied      = "|cff9d9d9d施放者:|r";
 	types.you         = "|cff00ff00(你)|r";
 	types.item        = "|cffe6cc80物品 ID:|r";
+	types.itemset     = "|cffa335ee套裝 ID:|r";
 	types.unit        = "|cffc79c6eNPC ID:|r";
 	types.quest       = "|cffffcc00任務 ID:|r";
 	types.achievement = "|cffcc99ff成就 ID:|r";
@@ -292,6 +305,7 @@ elseif locale == "zhTW" then
 		spell       = "在法術、技能、光環、附魔與專業技能的提示資訊中顯示法術 ID，並在可用時顯示等級。";
 		aplied      = "顯示施放增益、減益或光環的單位名稱，並標示由你施放的效果。";
 		item        = "在物品、裝備、連結與比較提示資訊中顯示物品 ID。";
+		itemset     = "顯示屬於套裝之物品的套裝 ID。";
 		unit        = "顯示生物及其他非玩家單位的 NPC ID。";
 		quest       = "在任務連結的提示資訊中顯示任務 ID。";
 		achievement = "在成就連結與成就視窗中顯示成就 ID。";
@@ -304,6 +318,7 @@ elseif locale == "zhCN" then
 	types.aplied      = "|cff9d9d9d施放者:|r";
 	types.you         = "|cff00ff00(你)|r";
 	types.item        = "|cffe6cc80物品 ID:|r";
+	types.itemset     = "|cffa335ee套装 ID:|r";
 	types.unit        = "|cffc79c6eNPC ID:|r";
 	types.quest       = "|cffffcc00任务 ID:|r";
 	types.achievement = "|cffcc99ff成就 ID:|r";
@@ -334,6 +349,7 @@ elseif locale == "zhCN" then
 		spell       = "在法术、技能、光环、附魔和专业技能的鼠标提示中显示法术 ID，并在可用时显示等级。";
 		aplied      = "显示施放增益、减益或光环的单位名称，并标记由你施放的效果。";
 		item        = "在物品、装备、链接和比较鼠标提示中显示物品 ID。";
+		itemset     = "显示属于套装之物品的套装 ID。";
 		unit        = "显示生物及其他非玩家单位的 NPC ID。";
 		quest       = "在任务链接的鼠标提示中显示任务 ID。";
 		achievement = "在成就链接和成就窗口中显示成就 ID。";
@@ -355,6 +371,7 @@ L.options = {
 	spell       = getOptionLabel(types.spell),
 	aplied      = getOptionLabel(types.aplied),
 	item        = getOptionLabel(types.item),
+	itemset     = getOptionLabel(types.itemset),
 	unit        = getOptionLabel(types.unit),
 	quest       = getOptionLabel(types.quest),
 	achievement = getOptionLabel(types.achievement),
