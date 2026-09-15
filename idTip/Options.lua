@@ -105,6 +105,15 @@ local function loadPendingSettings()
 	end
 end
 
+local function loadDefaultSettings()
+	for index = 1, #optionOrder do
+		local key = optionOrder[index];
+		pending[key] = defaults[key];
+	end
+	updateCheckboxes();
+	optionsPanel.dirty = true;
+end
+
 local function onOptionClick(self)
 	pending[self.optionKey] = self:GetChecked() and true or false;
 	optionsPanel.dirty = true;
@@ -172,14 +181,14 @@ optionsPanel.cancel = function()
 	optionsPanel.dirty = false;
 end;
 
-optionsPanel.default = function()
-	for index = 1, #optionOrder do
-		local key = optionOrder[index];
-		pending[key] = defaults[key];
-	end
-	updateCheckboxes();
-	optionsPanel.dirty = true;
-end;
+optionsPanel.default = loadDefaultSettings;
+
+local resetButton = CreateFrame("Button", "idTipResetButton", optionsPanel, "UIPanelButtonTemplate");
+resetButton:SetWidth(120);
+resetButton:SetHeight(22);
+resetButton:SetPoint("TOPLEFT", settingsTitle, "BOTTOMLEFT", 0, -190);
+resetButton:SetText(RESET);
+resetButton:SetScript("OnClick", loadDefaultSettings);
 
 local aboutPanel = CreateFrame("Frame", "idTipAboutPanel", InterfaceOptionsFramePanelContainer);
 aboutPanel.name = ROOT_CATEGORY_NAME;
@@ -223,8 +232,8 @@ author:SetText(L.author .. ": |cffa330c9" .. (GetAddOnMetadata(addonName, "Autho
 local version = aboutPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall");
 version:SetPoint("TOPLEFT", author, "BOTTOMLEFT", 0, -4);
 version:SetText(L.version .. ": |cffff5555" ..
-	(GetAddOnMetadata(addonName, "Version") or "1.6") .. " (" ..
-	(GetAddOnMetadata(addonName, "X-Date") or "2026-07-27") .. ")|r");
+	(GetAddOnMetadata(addonName, "Version") or "1.6.1") .. " (" ..
+	(GetAddOnMetadata(addonName, "X-Date") or "2026-09-15") .. ")|r");
 
 InterfaceOptions_AddCategory(aboutPanel);
 InterfaceOptions_AddCategory(optionsPanel);

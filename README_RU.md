@@ -10,13 +10,15 @@
 ![WoW 3.3.5a](https://img.shields.io/badge/WoW-3.3.5a-C79C6E?style=flat-square)
 [![License](https://img.shields.io/github/license/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/blob/master/LICENSE)
 [![Последний релиз](https://img.shields.io/github/v/release/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases/latest)
-[![Скачивания релиза](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.6/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
+[![Скачивания релиза](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.6.1/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Всего скачиваний](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square\&logo=discord\&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 
 **idTip WotLK**, ранее известный как **SpellAndItemID**, — это лёгкий аддон для World of Warcraft, который добавляет полезную техническую информацию непосредственно во внутриигровые подсказки.
 
 Разработан для **World of Warcraft 3.3.5a**.
+
+Текущая версия: **1.6.1** · Дата обновления: **2026-09-15**.
 
 </div>
 
@@ -126,7 +128,7 @@ World of Warcraft
 
 Откройте настройки интерфейса Blizzard и выберите **idTip WotLK** → **Настройки**. Отображение ID заклинаний, наложивших эффект персонажей, ID предметов и комплектов, NPC, заданий, достижений и критериев, символов и путей к иконкам настраивается независимо.
 
-Изменения подчиняются стандартным действиям окна настроек Blizzard: **ОК**, **Отмена** и **По умолчанию**.
+Чтобы восстановить стандартные значения, нажмите отдельную кнопку **Сброс**. Сброс применяется кнопкой **ОК** и отменяется кнопкой **Отмена**. Стандартное действие Blizzard **По умолчанию** также поддерживается.
 
 ## Для чего нужен idTip WotLK?
 

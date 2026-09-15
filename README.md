@@ -10,13 +10,15 @@
 ![WoW 3.3.5a](https://img.shields.io/badge/WoW-3.3.5a-C79C6E?style=flat-square)
 [![License](https://img.shields.io/github/license/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/blob/master/LICENSE)
 [![Last Release](https://img.shields.io/github/v/release/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases/latest)
-[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.6/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
+[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.6.1/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![All Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square\&logo=discord\&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 
 **idTip WotLK**, previously known as **SpellAndItemID**, is a lightweight World of Warcraft addon that adds useful technical information directly to in-game tooltips.
 
 Designed for **World of Warcraft 3.3.5a**.
+
+Current version: **1.6.1** · Updated: **2026-09-15**.
 
 </div>
 
@@ -126,7 +128,7 @@ Simply move the cursor over a supported spell, item, NPC, quest, achievement or 
 
 Open the Blizzard Interface Options and select **idTip WotLK** → **Settings**. Spell IDs, aura casters, item IDs, item-set IDs, NPC IDs, quest IDs, achievement and criteria IDs, glyph IDs, and icon paths can be enabled or disabled independently.
 
-Changes follow the standard **Okay**, **Cancel**, and **Defaults** behavior of the Blizzard options window.
+Use the dedicated **Reset** button to restore all options to their defaults. The reset is applied with **Okay** and discarded with **Cancel**. The standard Blizzard **Defaults** action is also supported.
 
 ## Why use idTip WotLK?
 
