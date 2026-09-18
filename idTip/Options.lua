@@ -23,18 +23,27 @@ local defaults = {
 	icon        = true,
 };
 
-if type(idTipDB) ~= "table" then
-	idTipDB = {};
-end
-
-for key, value in pairs(defaults) do
-	if type(idTipDB[key]) ~= "boolean" then
-		idTipDB[key] = value;
-	end
-end
-
-local settings = idTipDB;
+local settings = {};
 addon.settings = settings;
+
+local function initializeSettings()
+	local saved = idTipDB;
+	if type(saved) == "table" and saved ~= settings then
+		for key, value in pairs(saved) do
+			settings[key] = value;
+		end
+	end
+
+	for key, value in pairs(defaults) do
+		if type(settings[key]) ~= "boolean" then
+			settings[key] = value;
+		end
+	end
+
+	idTipDB = settings;
+end
+
+initializeSettings();
 
 local optionOrder = {
 	"spell",
@@ -183,6 +192,18 @@ end;
 
 optionsPanel.default = loadDefaultSettings;
 
+local eventFrame = CreateFrame("Frame");
+eventFrame:RegisterEvent("ADDON_LOADED");
+eventFrame:SetScript("OnEvent", function(self, _, loadedAddon)
+	if loadedAddon ~= addonName then return; end
+
+	self:UnregisterEvent("ADDON_LOADED");
+	initializeSettings();
+	optionsPanel.dirty = false;
+	loadPendingSettings();
+	updateCheckboxes();
+end);
+
 local resetButton = CreateFrame("Button", "idTipResetButton", optionsPanel, "UIPanelButtonTemplate");
 resetButton:SetWidth(120);
 resetButton:SetHeight(22);
@@ -232,8 +253,8 @@ author:SetText(L.author .. ": |cffa330c9" .. (GetAddOnMetadata(addonName, "Autho
 local version = aboutPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall");
 version:SetPoint("TOPLEFT", author, "BOTTOMLEFT", 0, -4);
 version:SetText(L.version .. ": |cffff5555" ..
-	(GetAddOnMetadata(addonName, "Version") or "1.6.1") .. " (" ..
-	(GetAddOnMetadata(addonName, "X-Date") or "2026-09-15") .. ")|r");
+	(GetAddOnMetadata(addonName, "Version") or "1.6.2") .. " (" ..
+	(GetAddOnMetadata(addonName, "X-Date") or "2026-09-18") .. ")|r");
 
 InterfaceOptions_AddCategory(aboutPanel);
 InterfaceOptions_AddCategory(optionsPanel);

@@ -18,8 +18,8 @@
 ## Notes-zhTW: 在遊戲內的各種提示資訊中加入 ID
 ## Notes-zhCN: 为游戏内的各种鼠标提示添加 ID
 ## Author: DarhangeR
-## Version: 1.6.1
-## X-Date: 2026-09-15
+## Version: 1.6.2
+## X-Date: 2026-09-18
 ## X-Category: Information
 ## X-Website: https://github.com/darhanger/idTip-WotLK
 ## SavedVariables: idTipDB
