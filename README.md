@@ -10,7 +10,7 @@
 ![WoW 3.3.5a](https://img.shields.io/badge/WoW-3.3.5a-C79C6E?style=flat-square)
 [![License](https://img.shields.io/github/license/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/blob/master/LICENSE)
 [![Last Release](https://img.shields.io/github/v/release/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases/latest)
-[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.6.2/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
+[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.7/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![All Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square\&logo=discord\&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 
@@ -18,7 +18,7 @@
 
 Designed for **World of Warcraft 3.3.5a**.
 
-Current version: **1.6.2** · Updated: **2026-09-18**.
+Current version: **1.7** · Updated: **2026-10-02**.
 
 </div>
 
@@ -29,16 +29,21 @@ The addon automatically extends supported game tooltips with additional informat
 It can display:
 
 * **Spell ID** — identifier and, when available, rank of a spell, aura, buff or debuff.
+* **Recipe ID** — identifier of the crafting spell in recipe links and profession tooltips.
+* **Result Item ID** — identifier of the item created by a recipe, when applicable.
 * **Applied by** — name of the unit that applied an aura.
 * **You** — highlights auras applied by the current player.
 * **Item ID** — identifier of an item.
 * **Item Set ID** — identifier of the set to which an item belongs.
 * **NPC ID** — identifier of a creature or NPC.
-* **Quest ID** — identifier of a quest.
+* **Quest ID** — identifier of a quest link, a quest log entry, or the selected quest in the log details.
 * **Achievement ID** — identifier of an achievement.
 * **Achievement Criteria ID** — identifier of an achievement criterion.
-* **Glyph ID** — identifier of a glyph.
+* **GlyphProperties ID** — identifier of the glyph's GlyphProperties record.
+* **Glyph Spell ID** — identifier of the spell associated with the glyph.
 * **Icon** — technical information about the associated icon.
+
+In profession tooltips, matching recipe and spell IDs or result and item IDs are displayed only once.
 
 Item Set IDs are resolved from bundled WotLK mapping data and do not require a custom client API or an external DBC reader at runtime.
 
@@ -48,6 +53,8 @@ Depending on the selected object, spell or interface element, the addon may add 
 
 ```text
 Spell ID: 12345 (Rank 1)
+Recipe ID: 2657
+Result Item ID: 2840
 Applied by: PlayerName (You)
 Item ID: 51280
 Item Set ID: 883
@@ -55,7 +62,8 @@ NPC ID: 36597
 Quest ID: 24545
 Achievement ID: 4530
 Achievement Criteria ID: 12345
-Glyph ID: 45790
+GlyphProperties ID: 361
+Glyph Spell ID: 56829
 Icon: INV_Gauntlets_90Black
 ```
 
@@ -70,6 +78,7 @@ idTip WotLK works with many standard World of Warcraft tooltips, including:
 * inventory items;
 * equipment;
 * item links;
+* profession recipes and result items;
 * creatures and NPCs;
 * quests;
 * achievements;
@@ -126,7 +135,7 @@ Simply move the cursor over a supported spell, item, NPC, quest, achievement or 
 
 ## Configuration
 
-Open the Blizzard Interface Options and select **idTip WotLK** → **Settings**. Spell IDs, aura casters, item IDs, item-set IDs, NPC IDs, quest IDs, achievement and criteria IDs, glyph IDs, and icon paths can be enabled or disabled independently.
+Open the Blizzard Interface Options and select **idTip WotLK** → **Settings**. You can toggle spell IDs, aura casters, item IDs, item-set IDs, NPC IDs, quest IDs, achievement and criteria IDs, glyph IDs, recipe information, and icon paths. The recipe option controls both recipe and result item IDs.
 
 Use the dedicated **Reset** button to restore all options to their defaults. The reset is applied with **Okay** and discarded with **Cancel**. The standard Blizzard **Defaults** action is also supported.
 

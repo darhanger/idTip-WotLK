@@ -20,6 +20,7 @@ local defaults = {
 	achievement = true,
 	criteria    = true,
 	glyph       = true,
+	recipe      = true,
 	icon        = true,
 };
 
@@ -55,6 +56,7 @@ local optionOrder = {
 	"achievement",
 	"criteria",
 	"glyph",
+	"recipe",
 	"icon",
 };
 
@@ -150,8 +152,8 @@ for index = 1, #optionOrder do
 		optionsPanel,
 		"InterfaceOptionsCheckButtonTemplate"
 	);
-	local column = index > 5 and 1 or 0;
-	local row = column == 1 and index - 6 or index - 1;
+	local column = index > 6 and 1 or 0;
+	local row = column == 1 and index - 7 or index - 1;
 	checkbox:SetHitRectInsets(0, OPTION_HIT_RIGHT_INSET, 0, 0);
 	checkbox:SetPoint("TOPLEFT", settingsTitle, "BOTTOMLEFT", column * OPTION_COLUMN_OFFSET, -12 - row * 34);
 	checkbox.optionKey = key;
@@ -207,7 +209,7 @@ end);
 local resetButton = CreateFrame("Button", "idTipResetButton", optionsPanel, "UIPanelButtonTemplate");
 resetButton:SetWidth(120);
 resetButton:SetHeight(22);
-resetButton:SetPoint("TOPLEFT", settingsTitle, "BOTTOMLEFT", 0, -190);
+resetButton:SetPoint("TOPLEFT", settingsTitle, "BOTTOMLEFT", 0, -224);
 resetButton:SetText(RESET);
 resetButton:SetScript("OnClick", loadDefaultSettings);
 
@@ -253,8 +255,8 @@ author:SetText(L.author .. ": |cffa330c9" .. (GetAddOnMetadata(addonName, "Autho
 local version = aboutPanel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall");
 version:SetPoint("TOPLEFT", author, "BOTTOMLEFT", 0, -4);
 version:SetText(L.version .. ": |cffff5555" ..
-	(GetAddOnMetadata(addonName, "Version") or "1.6.2") .. " (" ..
-	(GetAddOnMetadata(addonName, "X-Date") or "2026-09-18") .. ")|r");
+	(GetAddOnMetadata(addonName, "Version") or "1.7") .. " (" ..
+	(GetAddOnMetadata(addonName, "X-Date") or "2026-10-02") .. ")|r");
 
 InterfaceOptions_AddCategory(aboutPanel);
 InterfaceOptions_AddCategory(optionsPanel);

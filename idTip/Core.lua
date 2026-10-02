@@ -3,8 +3,10 @@ local _, addon = ...;
 local strfind, strmatch, strsub = string.find, string.match, string.sub;
 local next, tonumber, tostring, type, select = next, tonumber, tostring, type, select;
 local UnitName, UnitClass, UnitGUID = UnitName, UnitClass, UnitGUID;
-local GetGlyphSocketInfo = GetGlyphSocketInfo;
+local GetGlyphSocketInfo, GetGlyphLink = GetGlyphSocketInfo, GetGlyphLink;
+local GetTradeSkillRecipeLink, GetTradeSkillItemLink = GetTradeSkillRecipeLink, GetTradeSkillItemLink;
 local GetItemIcon, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo = GetItemIcon, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo;
+local GetQuestLogTitle, GetQuestLogSelection = GetQuestLogTitle, GetQuestLogSelection;
 local UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer, UnitIsUnit = UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer, UnitIsUnit;
 local CreateFrame, hooksecurefunc, IsAddOnLoaded = CreateFrame, hooksecurefunc, IsAddOnLoaded;
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
@@ -24,7 +26,6 @@ local itemSetIds = addon.itemSetIds or {};
 local YOU_SUFFIX = " " .. types.you;
 
 -- Lightweight caches ----------------------------------------------------------
-local glyphIdCache = {};
 local linkToItemIdCache = {};
 local unitIdCache = {};
 local spellIdCache = {};
@@ -61,12 +62,12 @@ local SPELL_ID_PATTERN = "^spell:(%d+)";
 local GLYPH_ID_PATTERN = "^glyph:%d+:(%d+)";
 local GLYPH_HYPERLINK_ID_PATTERN = "|Hglyph:%d+:(%d+)|h";
 
-local function getGlyphSpellIdFromLink(link)
+local function getGlyphPropertiesIdFromLink(link)
 	if not link then return; end
 
 	local glyphId = strmatch(link, GLYPH_ID_PATTERN) or strmatch(link, GLYPH_HYPERLINK_ID_PATTERN);
 	if not glyphId then return; end
-	return glyphSpellIds[tonumber(glyphId)];
+	return tonumber(glyphId);
 end
 
 -- Tooltip state avoids scanning named FontStrings and allocating lookup strings
@@ -256,28 +257,40 @@ local function addSpellIdBlock(tooltip, id, rank, icon)
 	if not settings.spell and not settings.icon then return false; end
 
 	local displayId, spellIcon = getCachedSpellData(id, rank, icon, settings.spell);
-	return addIdBlock(tooltip, displayId, types.spell, "spell", spellIcon);
+	local state = tooltipStates[tooltip];
+	local hadSpellId = state[types.spell] == state.generation;
+	local changed = addIdBlock(tooltip, displayId, types.spell, "spell", spellIcon);
+	if not hadSpellId and state[types.spell] == state.generation then
+		state.spellId = id;
+	end
+	return changed;
 end
 
 -- For Linked Tooltips --------------------------------------------------------
 local function onSetHyperlink(self, link)
 	if not link then return; end
 	if not settings.spell and not settings.quest and not settings.achievement and
-		not settings.glyph and not settings.icon then return; end
+		not settings.glyph and not settings.recipe and not settings.icon then return; end
 
 	local linkType, id = strmatch(link, "^(%a+):(%d+)");
 	if not id then return; end
+	local glyphPropertiesId;
 	if linkType == "glyph" then
-		id = getGlyphSpellIdFromLink(link);
+		glyphPropertiesId = getGlyphPropertiesIdFromLink(link);
+		if not glyphPropertiesId then return; end
+		id = glyphSpellIds[glyphPropertiesId];
 	else
 		id = tonumber(id);
+		if not id then return; end
 	end
-	if not id then return; end
 
 	local changed;
 	if linkType == "spell" or linkType == "enchant" or linkType == "trade" then
 		if settings.spell or settings.icon then
 			changed = addSpellIdBlock(self, id);
+		end
+		if linkType == "enchant" and settings.recipe and not settings.spell then
+			changed = addIdBlock(self, id, types.recipe, "recipe") or changed;
 		end
 	elseif linkType == "quest" then
 		if settings.quest then
@@ -290,7 +303,12 @@ local function onSetHyperlink(self, link)
 		end
 	elseif linkType == "glyph" then
 		if settings.glyph then
-			changed = addIdBlock(self, id, types.glyph, "glyph");
+			changed = addSpacerLine(self);
+			changed = addLine(self, glyphPropertiesId, types.glyphProperties) or changed;
+		end
+		if id and (settings.glyph or settings.icon) then
+			local icon = settings.icon and getCachedSpellIcon(id);
+			changed = addIdBlock(self, id, types.glyph, "glyph", icon) or changed;
 		end
 	end
 
@@ -300,6 +318,83 @@ local function onSetHyperlink(self, link)
 end;
 hooksecurefunc(ItemRefTooltip, "SetHyperlink", onSetHyperlink);
 hooksecurefunc(GameTooltip, "SetHyperlink", onSetHyperlink);
+
+-- Trade Skill Hooks -----------------------------------------------------------
+local function attachTradeSkillTooltip(self, index, reagentIndex)
+	if reagentIndex ~= nil or not index or not settings.recipe then return; end
+
+	local recipeLink = GetTradeSkillRecipeLink(index);
+	local recipeId = recipeLink and tonumber(strmatch(recipeLink, "enchant:(%d+)"));
+	local resultLink = GetTradeSkillItemLink(index);
+	local resultId = resultLink and tonumber(strmatch(resultLink, ITEM_ID_PATTERN));
+	-- Generic tooltip hooks may already show these IDs as a spell or item.
+	local state = tooltipStates[self];
+	local generation = state.generation;
+	local showRecipe = recipeId and (state[types.spell] ~= generation or state.spellId ~= recipeId);
+	local showResult = resultId and (state[types.item] ~= generation or state.itemId ~= resultId);
+	if not showRecipe and not showResult then return; end
+
+	local changed = addSpacerLine(self);
+	if showRecipe then
+		changed = addLine(self, recipeId, types.recipe) or changed;
+	end
+	if showResult then
+		changed = addLine(self, resultId, types.result) or changed;
+	end
+	if changed then
+		self:Show();
+	end
+end
+hooksecurefunc(GameTooltip, "SetTradeSkillItem", attachTradeSkillTooltip);
+
+-- Quest Log Hooks -------------------------------------------------------------
+local function attachQuestLogTooltip(button)
+	if not settings.quest then return; end
+
+	local index = button:GetID();
+	if not index then return; end
+	local title, _, _, _, isHeader, _, _, _, id = GetQuestLogTitle(index);
+	if not title or isHeader or not id then return; end
+
+	if not GameTooltip:IsOwned(button) or not GameTooltip:IsShown() then
+		GameTooltip_SetDefaultAnchor(GameTooltip, button);
+		GameTooltip:SetText(title);
+	end
+	if addIdBlock(GameTooltip, id, types.quest, "quest") then
+		GameTooltip:Show();
+	end
+end
+hooksecurefunc("QuestLogTitleButton_OnEnter", attachQuestLogTooltip);
+hooksecurefunc("QuestLogTitleButton_OnEvent", function(button)
+	if settings.quest and button:IsMouseOver() then
+		attachQuestLogTooltip(button);
+	end
+end);
+
+local questLogIdText = QuestLogDetailFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall");
+questLogIdText:SetPoint("TOPRIGHT", QuestLogDetailFrame, "TOPRIGHT", -28, -49);
+questLogIdText:SetWidth(270);
+questLogIdText:SetJustifyH("RIGHT");
+
+hooksecurefunc("QuestLog_UpdateQuestDetails", function()
+	if not settings.quest then
+		questLogIdText:Hide();
+		return;
+	end
+
+	local index = GetQuestLogSelection();
+	if not index or index == 0 then
+		questLogIdText:Hide();
+		return;
+	end
+	local _, _, _, _, isHeader, _, _, _, id = GetQuestLogTitle(index);
+	if id and not isHeader then
+		questLogIdText:SetText(types.quest .. " " .. id);
+		questLogIdText:Show();
+	else
+		questLogIdText:Hide();
+	end
+end);
 
 -- Spell Hooks ----------------------------------------------------------------
 local playerAppliedByText;
@@ -380,10 +475,13 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
 
 	local guid = UnitGUID(unit);
 	if not guid then return; end
+	local guidType = strsub(guid, 1, 6);
+	if guidType ~= "0xF130" and guidType ~= "0xF140" and
+		guidType ~= "0xF150" and guidType ~= "0xF550" then return; end
 
 	local id = unitIdCache[guid];
 	if id == nil then
-		id = tonumber(strsub(guid, -11, -7), 16) or false;
+		id = tonumber(strsub(guid, -12, -7), 16) or false;
 		setCachedValue(unitIdCache, guid, id);
 	end
 
@@ -407,7 +505,12 @@ local function attachItemTooltip(self)
 	local icon = id and settings.icon and getCachedItemIcon(id);
 	if not id then return; end
 
+	local state = tooltipStates[self];
+	local hadItemId = state[types.item] == state.generation;
 	local changed = addIdBlock(self, id, types.item, "item", icon);
+	if not hadItemId and state[types.item] == state.generation then
+		state.itemId = id;
+	end
 	local setId = settings.itemset and itemSetIds[id];
 	if setId then
 		changed = addSpacerLine(self) or changed;
@@ -424,28 +527,20 @@ local function attachGlyphTooltip(self, arg1, arg2)
 	if arg1 == nil then return; end
 	if not settings.glyph and not settings.icon then return; end
 
-	local socketCache = glyphIdCache[arg1];
-	if not socketCache then
-		socketCache = {};
-		glyphIdCache[arg1] = socketCache;
-	end
+	local _, _, id, icon = GetGlyphSocketInfo(arg1, arg2);
+	if not id then return; end
 
-	local groupKey = arg2;
-	if groupKey == nil then
-		groupKey = false;
+	local changed = false;
+	if settings.glyph then
+		local glyphPropertiesId = getGlyphPropertiesIdFromLink(GetGlyphLink(arg1, arg2));
+		if glyphPropertiesId then
+			changed = addSpacerLine(self) or changed;
+			changed = addLine(self, glyphPropertiesId, types.glyphProperties) or changed;
+		end
 	end
-
-	local id = socketCache[groupKey];
-	local icon;
-	if id == nil then
-		local _, _, resolvedId, resolvedIcon = GetGlyphSocketInfo(arg1, arg2);
-		id = resolvedId or false;
-		icon = resolvedIcon;
-		socketCache[groupKey] = id;
-	end
-
-	local glyphIcon = id and settings.icon and getCachedSpellIcon(id, icon);
-	if id and addIdBlock(self, id, types.glyph, "glyph", glyphIcon) then
+	local glyphIcon = settings.icon and getCachedSpellIcon(id, icon);
+	changed = addIdBlock(self, id, types.glyph, "glyph", glyphIcon) or changed;
+	if changed then
 		self:Show();
 	end
 end
