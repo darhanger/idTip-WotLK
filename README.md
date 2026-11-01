@@ -10,7 +10,7 @@
 ![WoW 3.3.5a](https://img.shields.io/badge/WoW-3.3.5a-C79C6E?style=flat-square)
 [![License](https://img.shields.io/github/license/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/blob/master/LICENSE)
 [![Last Release](https://img.shields.io/github/v/release/darhanger/idTip-WotLK?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases/latest)
-[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.7/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
+[![Release Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/1.8/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![All Downloads](https://img.shields.io/github/downloads/darhanger/idTip-WotLK/total?style=flat-square)](https://github.com/darhanger/idTip-WotLK/releases)
 [![Discord Server](https://img.shields.io/badge/Discord-7289DA?style=flat-square\&logo=discord\&logoColor=white)](https://discord.gg/ZKFkvrzaU4)
 
@@ -18,7 +18,7 @@
 
 Designed for **World of Warcraft 3.3.5a**.
 
-Current version: **1.7** · Updated: **2026-10-02**.
+Current version: **1.8** · Updated: **2026-11-01**.
 
 </div>
 
@@ -35,6 +35,8 @@ It can display:
 * **You** — highlights auras applied by the current player.
 * **Item ID** — identifier of an item.
 * **Item Set ID** — identifier of the set to which an item belongs.
+* **Enchant ID** — identifier of a permanent enchantment applied to an item.
+* **Gem Item IDs** — identifiers and names of socketed gems, shown by socket number when their links are available.
 * **NPC ID** — identifier of a creature or NPC.
 * **Quest ID** — identifier of a quest link, a quest log entry, or the selected quest in the log details.
 * **Achievement ID** — identifier of an achievement.
@@ -47,6 +49,8 @@ In profession tooltips, matching recipe and spell IDs or result and item IDs are
 
 Item Set IDs are resolved from bundled WotLK mapping data and do not require a custom client API or an external DBC reader at runtime.
 
+Enchant-name data is retained in `idTip/Data`, but is not loaded or shown in tooltips.
+
 ## Tooltip examples
 
 Depending on the selected object, spell or interface element, the addon may add lines such as:
@@ -58,6 +62,8 @@ Result Item ID: 2840
 Applied by: PlayerName (You)
 Item ID: 51280
 Item Set ID: 883
+Enchant ID: 3817
+Socket 1 ID: Gem Name                         40155
 NPC ID: 36597
 Quest ID: 24545
 Achievement ID: 4530
@@ -77,6 +83,7 @@ idTip WotLK works with many standard World of Warcraft tooltips, including:
 * buffs and debuffs;
 * inventory items;
 * equipment;
+* permanent enchants and socketed gems on equipment;
 * item links;
 * profession recipes and result items;
 * creatures and NPCs;
@@ -127,15 +134,17 @@ World of Warcraft
 
 Compatibility with heavily modified custom clients or tooltip replacements may vary.
 
+The bundled ID mappings and enchant names are accurate for BlizzLike servers using 3.3.5a data. On servers with modified items, enchants, or other game data, a bundled name or mapping may differ from the server's data.
+
 ## Usage
 
-The addon starts working immediately with all supported information enabled.
+The addon starts working immediately. Permanent enchant and socketed gem IDs are disabled by default and can be enabled in the settings.
 
 Simply move the cursor over a supported spell, item, NPC, quest, achievement or another interface element. The corresponding technical information will be added to its tooltip.
 
 ## Configuration
 
-Open the Blizzard Interface Options and select **idTip WotLK** → **Settings**. You can toggle spell IDs, aura casters, item IDs, item-set IDs, NPC IDs, quest IDs, achievement and criteria IDs, glyph IDs, recipe information, and icon paths. The recipe option controls both recipe and result item IDs.
+Open the Blizzard Interface Options and select **idTip WotLK** → **Settings**. You can toggle spell IDs, aura casters, item IDs, permanent enchant IDs, socketed gem item IDs, item-set IDs, NPC IDs, quest IDs, achievement and criteria IDs, glyph IDs, recipe information, and icon paths. The recipe option controls both recipe and result item IDs. Temporary enchants are not included in the enchant ID line.
 
 Use the dedicated **Reset** button to restore all options to their defaults. The reset is applied with **Okay** and discarded with **Cancel**. The standard Blizzard **Defaults** action is also supported.
 

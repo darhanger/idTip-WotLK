@@ -5,7 +5,8 @@ local next, tonumber, tostring, type, select = next, tonumber, tostring, type, s
 local UnitName, UnitClass, UnitGUID = UnitName, UnitClass, UnitGUID;
 local GetGlyphSocketInfo, GetGlyphLink = GetGlyphSocketInfo, GetGlyphLink;
 local GetTradeSkillRecipeLink, GetTradeSkillItemLink = GetTradeSkillRecipeLink, GetTradeSkillItemLink;
-local GetItemIcon, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo = GetItemIcon, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo;
+local GetItemIcon, GetItemGem, GetItemInfo, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo = GetItemIcon, GetItemGem, GetItemInfo, GetSpellInfo, GetAchievementInfo, GetAchievementCriteriaInfo;
+local GetAuctionItemClasses, GetAuctionItemSubClasses = GetAuctionItemClasses, GetAuctionItemSubClasses;
 local GetQuestLogTitle, GetQuestLogSelection = GetQuestLogTitle, GetQuestLogSelection;
 local UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer, UnitIsUnit = UnitBuff, UnitDebuff, UnitAura, UnitIsPlayer, UnitIsUnit;
 local CreateFrame, hooksecurefunc, IsAddOnLoaded = CreateFrame, hooksecurefunc, IsAddOnLoaded;
@@ -23,7 +24,24 @@ local types = addon.types;
 local settings = addon.settings;
 local glyphSpellIds = addon.glyphSpellIds;
 local itemSetIds = addon.itemSetIds or {};
+local gemLabels = types.gem;
 local YOU_SUFFIX = " " .. types.you;
+
+local gemClass = select(10, GetAuctionItemClasses());
+local gemColors = {};
+if gemClass then
+	local red, blue, yellow, purple, green, orange, meta, simple, prismatic = GetAuctionItemSubClasses(10);
+	if red then gemColors[red] = {1, 0.35, 0.35}; end
+	if blue then gemColors[blue] = {0.4, 0.65, 1}; end
+	if yellow then gemColors[yellow] = {1, 0.85, 0.35}; end
+	if purple then gemColors[purple] = {0.78, 0.5, 1}; end
+	if green then gemColors[green] = {0.4, 0.9, 0.5}; end
+	if orange then gemColors[orange] = {1, 0.65, 0.3}; end
+	if meta then gemColors[meta] = {0.75, 0.8, 0.9}; end
+	if simple then gemColors[simple] = {0.65, 0.8, 0.8}; end
+	if prismatic then gemColors[prismatic] = {0.65, 0.9, 1}; end
+end
+local GEM_FALLBACK_COLOR = {0.4, 0.85, 0.9};
 
 -- Lightweight caches ----------------------------------------------------------
 local linkToItemIdCache = {};
@@ -116,7 +134,7 @@ local function getTooltipLine(state, index)
 	return left, right;
 end
 
-local function addLine(tooltip, id, label, r, g, b)
+local function addLine(tooltip, id, label, r, g, b, leftR, leftG, leftB, displayLabel)
 	if id == nil or id == false then return false; end
 
 	local state = tooltipStates[tooltip];
@@ -125,19 +143,13 @@ local function addLine(tooltip, id, label, r, g, b)
 		return false;
 	end
 
-	tooltip:AddDoubleLine(label, id, nil, nil, nil, r or 1, g or 1, b or 1);
+	tooltip:AddDoubleLine(displayLabel or label, id, leftR, leftG, leftB, r or 1, g or 1, b or 1);
 	state[label] = generation;
 	state.hasLines = generation;
 	return true;
 end;
 
-local function addSpacerLine(tooltip)
-	local state = tooltipStates[tooltip];
-	local generation = state.generation;
-	if state.hasLines == generation then
-		return false;
-	end
-
+local function hasTrailingSpacerLine(tooltip, state)
 	local numLines = tooltip:NumLines() or 0;
 	if numLines > 0 then
 		local left, right = getTooltipLine(state, numLines);
@@ -145,12 +157,35 @@ local function addSpacerLine(tooltip)
 		local rightText = right and right:GetText();
 		if (not leftText or leftText == "" or leftText == " ") and
 			(not rightText or rightText == "") then
-			return false;
+			return true;
 		end
+	end
+	return false;
+end;
+
+local function addSpacerLine(tooltip)
+	local state = tooltipStates[tooltip];
+	local generation = state.generation;
+	if state.hasLines == generation or hasTrailingSpacerLine(tooltip, state) then
+		return false;
 	end
 
 	tooltip:AddLine(" ");
 	state.hasLines = generation;
+	return true;
+end;
+
+local function addItemModSpacer(tooltip)
+	local state = tooltipStates[tooltip];
+	local generation = state.generation;
+	if state.itemModSpacer == generation then return false; end
+	state.itemModSpacer = generation;
+	if state.hasLines ~= generation then
+		return addSpacerLine(tooltip);
+	end
+	if hasTrailingSpacerLine(tooltip, state) then return false; end
+
+	tooltip:AddLine(" ");
 	return true;
 end;
 
@@ -491,8 +526,24 @@ GameTooltip:HookScript("OnTooltipSetUnit", function(self)
 end);
 
 -- Items Hooks ----------------------------------------------------------------
+local function addGemItemId(tooltip, link, index)
+	local label = gemLabels[index];
+	local state = tooltipStates[tooltip];
+	if state[label] == state.generation then return false; end
+
+	local gemName, gemLink = GetItemGem(link, index);
+	local gemId = gemLink and tonumber(strmatch(gemLink, ITEM_ID_PATTERN));
+	if not gemId then return false; end
+
+	local _, _, _, _, _, itemClass, itemSubclass = GetItemInfo(gemLink);
+	local color = itemClass == gemClass and gemColors[itemSubclass] or GEM_FALLBACK_COLOR;
+	local displayLabel = gemName and gemName ~= "" and (label .. " " .. gemName) or label;
+	local changed = addItemModSpacer(tooltip);
+	return addLine(tooltip, gemId, label, nil, nil, nil, color[1], color[2], color[3], displayLabel) or changed;
+end
+
 local function attachItemTooltip(self)
-	if not settings.item and not settings.itemset and not settings.icon then return; end
+	if not settings.item and not settings.enchant and not settings.gem and not settings.itemset and not settings.icon then return; end
 
 	local _, link = self:GetItem();
 	if not link then return; end
@@ -515,6 +566,25 @@ local function attachItemTooltip(self)
 	if setId then
 		changed = addSpacerLine(self) or changed;
 		changed = addLine(self, setId, types.itemset) or changed;
+	end
+	if settings.enchant and state[types.enchant] ~= state.generation then
+		local enchantId = tonumber(strmatch(link, "item:%d+:([^:]*)"));
+		if enchantId and enchantId > 0 then
+			changed = addItemModSpacer(self) or changed;
+			changed = addLine(self, enchantId, types.enchant) or changed;
+		end
+	end
+	if settings.gem then
+		local gem1, gem2, gem3 = strmatch(link, "item:%d+:[^:]*:([^:]*):([^:]*):([^:]*)");
+		if gem1 and gem1 ~= "" and gem1 ~= "0" then
+			changed = addGemItemId(self, link, 1) or changed;
+		end
+		if gem2 and gem2 ~= "" and gem2 ~= "0" then
+			changed = addGemItemId(self, link, 2) or changed;
+		end
+		if gem3 and gem3 ~= "" and gem3 ~= "0" then
+			changed = addGemItemId(self, link, 3) or changed;
+		end
 	end
 
 	if changed then

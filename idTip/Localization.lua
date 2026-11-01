@@ -9,6 +9,8 @@ local types = {
 	aplied      = "|cff9d9d9dApplied by:|r",
 	you         = "|cff00ff00(You)|r",
 	item        = "|cffe6cc80Item ID:|r",
+	enchant     = "|cffbb88ffEnchant ID:|r",
+	gem         = "Socket %d ID:",
 	itemset     = "|cffa335eeItem Set ID:|r",
 	unit        = "|cffc79c6eNPC ID:|r",
 	quest       = "|cffffcc00Quest ID:|r",
@@ -32,6 +34,7 @@ local L = {
 	criteriaOption      = "Achievement Criteria IDs",
 	glyphOption         = "Glyph IDs",
 	recipeOption        = "Recipe IDs",
+	gemOption           = "Gem Item IDs",
 	translationCredits  =
 		"English translation\n" ..
 		"German translation\n" ..
@@ -47,6 +50,8 @@ local L = {
 		recipe      = "Shows recipe IDs in links and profession tooltips, plus result item IDs when available. Matching spell and item IDs are not repeated.",
 		aplied      = "Shows the name of the unit that applied a buff, debuff, or aura, and marks effects applied by you.",
 		item        = "Shows the item ID in tooltips for items, equipment, links, and comparisons.",
+		enchant     = "Shows the permanent enchantment ID from an item link; temporary enchants are not included.",
+		gem         = "Shows the item IDs of socketed gems when the client provides their links.",
 		itemset     = "Shows the item set ID for items that belong to a set.",
 		unit        = "Shows the NPC ID for creatures and other non-player units.",
 		quest       = "Shows the quest ID in quest-link tooltips and the quest log, including selected quest details.",
@@ -64,6 +69,8 @@ if locale == "deDE" then
 	types.aplied      = "|cff9d9d9dGewirkt von:|r";
 	types.you         = "|cff00ff00(Du)|r";
 	types.item        = "|cffe6cc80Gegenstands-ID:|r";
+	types.enchant     = "|cffbb88ffVerzauberungs-ID:|r";
+	types.gem         = "Sockel %d ID:";
 	types.itemset     = "|cffa335eeGegenstandsset-ID:|r";
 	types.unit        = "|cffc79c6eNSC-ID:|r";
 	types.quest       = "|cffffcc00Quest-ID:|r";
@@ -83,6 +90,7 @@ if locale == "deDE" then
 	L.criteriaOption      = "Erfolgskriterien-IDs";
 	L.glyphOption         = "Glyphen-IDs";
 	L.recipeOption        = "Rezept-IDs";
+	L.gemOption           = "Edelstein-IDs";
 	L.translationCredits  =
 		"Übersetzung ins Englische\n" ..
 		"Übersetzung ins Deutsche\n" ..
@@ -98,6 +106,8 @@ if locale == "deDE" then
 		recipe      = "Zeigt Rezept-IDs in Links und Berufstooltips sowie verfügbare Ergebnisgegenstands-IDs an. Gleiche Zauber- und Gegenstands-IDs werden nicht wiederholt.";
 		aplied      = "Zeigt den Namen der Einheit an, die einen Stärkungszauber, Schwächungszauber oder eine Aura angewendet hat, und markiert deine eigenen Effekte.";
 		item        = "Zeigt die Gegenstands-ID in Tooltips für Gegenstände, Ausrüstung, Links und Vergleiche an.";
+		enchant     = "Zeigt die ID der dauerhaften Verzauberung aus dem Gegenstandslink an; temporäre Verzauberungen sind nicht enthalten.";
+		gem         = "Zeigt die Gegenstands-IDs eingesetzter Edelsteine an, wenn der Client ihre Links bereitstellt.";
 		itemset     = "Zeigt die Gegenstandsset-ID für Gegenstände an, die zu einem Set gehören.";
 		unit        = "Zeigt die NSC-ID für Kreaturen und andere Einheiten an, die keine Spieler sind.";
 		quest       = "Zeigt die Quest-ID in Tooltips von Questlinks und im Questlog an.";
@@ -113,6 +123,8 @@ elseif locale == "frFR" then
 	types.aplied      = "|cff9d9d9dAppliqué par :|r";
 	types.you         = "|cff00ff00(Vous)|r";
 	types.item        = "|cffe6cc80ID de l'objet :|r";
+	types.enchant     = "|cffbb88ffID de l'enchantement :|r";
+	types.gem         = "ID de la châsse %d :";
 	types.itemset     = "|cffa335eeID de l'ensemble :|r";
 	types.unit        = "|cffc79c6eID du PNJ :|r";
 	types.quest       = "|cffffcc00ID de la quête :|r";
@@ -132,6 +144,7 @@ elseif locale == "frFR" then
 	L.criteriaOption      = "ID des critères de hauts faits";
 	L.glyphOption         = "ID des glyphes";
 	L.recipeOption        = "ID des recettes";
+	L.gemOption           = "ID des gemmes";
 	L.translationCredits  =
 		"Traduction en anglais\n" ..
 		"Traduction en allemand\n" ..
@@ -147,6 +160,8 @@ elseif locale == "frFR" then
 		recipe      = "Affiche les ID de recette dans les liens et les infobulles des métiers, ainsi que l'ID de l'objet créé s'il existe. Les ID de sort et d'objet identiques ne sont pas répétés.";
 		aplied      = "Affiche le nom de l'unité ayant appliqué une amélioration, un affaiblissement ou une aura, et signale vos propres effets.";
 		item        = "Affiche l'ID de l'objet dans les infobulles des objets, équipements, liens et comparaisons.";
+		enchant     = "Affiche l'ID de l'enchantement permanent du lien d'objet ; les enchantements temporaires ne sont pas inclus.";
+		gem         = "Affiche les ID des objets des gemmes serties lorsque le client fournit leurs liens.";
 		itemset     = "Affiche l'ID de l'ensemble pour les objets qui appartiennent à un ensemble.";
 		unit        = "Affiche l'ID du PNJ pour les créatures et les autres unités non-joueurs.";
 		quest       = "Affiche l'ID de la quête dans les infobulles des liens de quête et du journal des quêtes.";
@@ -162,6 +177,8 @@ elseif locale == "esES" or locale == "esMX" then
 	types.aplied      = "|cff9d9d9dAplicado por:|r";
 	types.you         = "|cff00ff00(Tú)|r";
 	types.item        = "|cffe6cc80ID de objeto:|r";
+	types.enchant     = "|cffbb88ffID de encantamiento:|r";
+	types.gem         = "ID de ranura %d:";
 	types.itemset     = "|cffa335eeID de conjunto:|r";
 	types.unit        = "|cffc79c6eID de PNJ:|r";
 	types.quest       = "|cffffcc00ID de misión:|r";
@@ -182,6 +199,7 @@ elseif locale == "esES" or locale == "esMX" then
 	L.criteriaOption      = "ID de criterios de logros";
 	L.glyphOption         = "ID de glifos";
 	L.recipeOption        = "ID de recetas";
+	L.gemOption           = "ID de gemas";
 	L.translationCredits  =
 		"Traducción al inglés\n" ..
 		"Traducción al alemán\n" ..
@@ -197,6 +215,8 @@ elseif locale == "esES" or locale == "esMX" then
 		recipe      = "Muestra el ID de receta en enlaces y profesiones, y el ID del objeto creado si existe. No repite los ID de hechizo u objeto iguales.";
 		aplied      = "Muestra el nombre de la unidad que aplicó un beneficio, perjuicio o aura, y señala tus propios efectos.";
 		item        = "Muestra el ID del objeto en las descripciones de objetos, equipo, enlaces y comparaciones.";
+		enchant     = "Muestra el ID del encantamiento permanente del enlace del objeto; no incluye encantamientos temporales.";
+		gem         = "Muestra los ID de objeto de las gemas engarzadas cuando el cliente proporciona sus enlaces.";
 		itemset     = "Muestra el ID de conjunto para los objetos que pertenecen a un conjunto.";
 		unit        = "Muestra el ID de PNJ para criaturas y otras unidades que no sean jugadores.";
 		quest       = "Muestra el ID de misión en las descripciones de los enlaces y en el registro de misiones.";
@@ -212,6 +232,8 @@ elseif locale == "ruRU" then
 	types.aplied      = "|cff9d9d9dНаложено:|r";
 	types.you         = "|cff00ff00(Вы)|r";
 	types.item        = "|cffe6cc80ID предмета:|r";
+	types.enchant     = "|cffbb88ffID зачарования:|r";
+	types.gem         = "ID сокета %d:";
 	types.itemset     = "|cffa335eeID комплекта:|r";
 	types.unit        = "|cffc79c6eID НИП:|r";
 	types.quest       = "|cffffcc00ID задания:|r";
@@ -232,6 +254,7 @@ elseif locale == "ruRU" then
 	L.criteriaOption      = "ID критериев достижений";
 	L.glyphOption         = "ID символов";
 	L.recipeOption        = "ID рецептов";
+	L.gemOption           = "ID вставленных камней";
 	L.translationCredits  =
 		"Перевод на английский\n" ..
 		"Перевод на немецкий\n" ..
@@ -247,6 +270,8 @@ elseif locale == "ruRU" then
 		recipe      = "Показывает ID рецепта в ссылках и окне профессии, а также ID результата, если он есть. Совпадающие ID заклинания и предмета не повторяются.";
 		aplied      = "Показывает имя юнита, наложившего положительный эффект, отрицательный эффект или ауру, и помечает ваши эффекты.";
 		item        = "Показывает ID предмета в подсказках предметов, экипировки, ссылок и сравнения.";
+		enchant     = "Показывает ID постоянного зачарования из ссылки на предмет. Временные зачарования не включены.";
+		gem         = "Показывает ID предметов вставленных камней, если клиент предоставляет ссылки на них.";
 		itemset     = "Показывает ID комплекта для предметов, входящих в комплект.";
 		unit        = "Показывает ID НИП для существ и других юнитов, не являющихся игроками.";
 		quest       = "Показывает ID задания в подсказках ссылок, при наведении на запись журнала и в сведениях о выбранном задании.";
@@ -262,6 +287,8 @@ elseif locale == "koKR" then
 	types.aplied      = "|cff9d9d9d시전자:|r";
 	types.you         = "|cff00ff00(본인)|r";
 	types.item        = "|cffe6cc80아이템 ID:|r";
+	types.enchant     = "|cffbb88ff마법부여 ID:|r";
+	types.gem         = "보석 홈 %d ID:";
 	types.itemset     = "|cffa335ee아이템 세트 ID:|r";
 	types.unit        = "|cffc79c6eNPC ID:|r";
 	types.quest       = "|cffffcc00퀘스트 ID:|r";
@@ -282,6 +309,7 @@ elseif locale == "koKR" then
 	L.criteriaOption      = "업적 조건 ID";
 	L.glyphOption         = "문양 ID";
 	L.recipeOption        = "제작법 ID";
+	L.gemOption           = "보석 아이템 ID";
 	L.translationCredits  =
 		"영어 번역\n" ..
 		"독일어 번역\n" ..
@@ -297,6 +325,8 @@ elseif locale == "koKR" then
 		recipe      = "제작법 링크와 전문기술 툴팁에 제작법 ID를, 가능한 경우 결과 아이템 ID를 표시합니다. 동일한 주문 및 아이템 ID는 중복 표시하지 않습니다.";
 		aplied      = "강화 효과, 약화 효과 또는 오라를 적용한 유닛의 이름을 표시하고 자신의 효과를 구분합니다.";
 		item        = "아이템, 장비, 링크 및 비교 툴팁에 아이템 ID를 표시합니다.";
+		enchant     = "아이템 링크의 영구 마법부여 ID를 표시합니다. 임시 마법부여는 포함되지 않습니다.";
+		gem         = "클라이언트가 보석 링크를 제공하면 장착된 보석의 아이템 ID를 표시합니다.";
 		itemset     = "세트에 속한 아이템의 아이템 세트 ID를 표시합니다.";
 		unit        = "플레이어가 아닌 생물 및 다른 유닛의 NPC ID를 표시합니다.";
 		quest       = "퀘스트 링크 툴팁과 퀘스트 목록에 퀘스트 ID를 표시합니다.";
@@ -312,6 +342,8 @@ elseif locale == "zhTW" then
 	types.aplied      = "|cff9d9d9d施放者:|r";
 	types.you         = "|cff00ff00(你)|r";
 	types.item        = "|cffe6cc80物品 ID:|r";
+	types.enchant     = "|cffbb88ff附魔 ID:|r";
+	types.gem         = "插槽 %d ID:";
 	types.itemset     = "|cffa335ee套裝 ID:|r";
 	types.unit        = "|cffc79c6eNPC ID:|r";
 	types.quest       = "|cffffcc00任務 ID:|r";
@@ -332,6 +364,7 @@ elseif locale == "zhTW" then
 	L.criteriaOption      = "成就條件 ID";
 	L.glyphOption         = "雕紋 ID";
 	L.recipeOption        = "配方 ID";
+	L.gemOption           = "寶石物品 ID";
 	L.translationCredits  =
 		"英文翻譯\n" ..
 		"德文翻譯\n" ..
@@ -347,6 +380,8 @@ elseif locale == "zhTW" then
 		recipe      = "在配方連結及專業技能提示資訊中顯示配方 ID，並在可用時顯示成品 ID。相同的法術或物品 ID 不會重複顯示。";
 		aplied      = "顯示施放增益、減益或光環的單位名稱，並標示由你施放的效果。";
 		item        = "在物品、裝備、連結與比較提示資訊中顯示物品 ID。";
+		enchant     = "顯示物品連結中的永久附魔 ID；不包含暫時附魔。";
+		gem         = "當客戶端提供寶石連結時，顯示已鑲嵌寶石的物品 ID。";
 		itemset     = "顯示屬於套裝之物品的套裝 ID。";
 		unit        = "顯示生物及其他非玩家單位的 NPC ID。";
 		quest       = "在任務連結提示資訊和任務日誌中顯示任務 ID。";
@@ -362,6 +397,8 @@ elseif locale == "zhCN" then
 	types.aplied      = "|cff9d9d9d施放者:|r";
 	types.you         = "|cff00ff00(你)|r";
 	types.item        = "|cffe6cc80物品 ID:|r";
+	types.enchant     = "|cffbb88ff附魔 ID:|r";
+	types.gem         = "插槽 %d ID:";
 	types.itemset     = "|cffa335ee套装 ID:|r";
 	types.unit        = "|cffc79c6eNPC ID:|r";
 	types.quest       = "|cffffcc00任务 ID:|r";
@@ -382,6 +419,7 @@ elseif locale == "zhCN" then
 	L.criteriaOption      = "成就条件 ID";
 	L.glyphOption         = "雕文 ID";
 	L.recipeOption        = "配方 ID";
+	L.gemOption           = "宝石物品 ID";
 	L.translationCredits  =
 		"英语翻译\n" ..
 		"德语翻译\n" ..
@@ -397,6 +435,8 @@ elseif locale == "zhCN" then
 		recipe      = "在配方链接和专业技能鼠标提示中显示配方 ID，并在可用时显示成品 ID。相同的法术或物品 ID 不会重复显示。";
 		aplied      = "显示施放增益、减益或光环的单位名称，并标记由你施放的效果。";
 		item        = "在物品、装备、链接和比较鼠标提示中显示物品 ID。";
+		enchant     = "显示物品链接中的永久附魔 ID；不包含临时附魔。";
+		gem         = "当客户端提供宝石链接时，显示已镶嵌宝石的物品 ID。";
 		itemset     = "显示属于套装之物品的套装 ID。";
 		unit        = "显示生物及其他非玩家单位的 NPC ID。";
 		quest       = "在任务链接的鼠标提示和任务日志中显示任务 ID。";
@@ -408,6 +448,9 @@ elseif locale == "zhCN" then
 end
 
 local gsub = string.gsub;
+local format = string.format;
+local gemFormat = types.gem;
+types.gem = {format(gemFormat, 1), format(gemFormat, 2), format(gemFormat, 3)};
 
 local function getOptionLabel(label)
 	label = gsub(label, "|c%x%x%x%x%x%x%x%x", "");
@@ -419,6 +462,8 @@ L.options = {
 	spell       = getOptionLabel(types.spell),
 	aplied      = getOptionLabel(types.aplied),
 	item        = getOptionLabel(types.item),
+	enchant     = getOptionLabel(types.enchant),
+	gem         = L.gemOption,
 	itemset     = getOptionLabel(types.itemset),
 	unit        = getOptionLabel(types.unit),
 	quest       = getOptionLabel(types.quest),
